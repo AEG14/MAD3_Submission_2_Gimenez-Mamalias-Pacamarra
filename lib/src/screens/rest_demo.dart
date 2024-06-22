@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import '../models/post.model.dart';
 import '../models/user.model.dart';
+import '../services/http_services.dart';
 
 class RestDemoScreen extends StatefulWidget {
   const RestDemoScreen({super.key});
@@ -386,64 +387,5 @@ class PostController with ChangeNotifier {
       notifyListeners();
       return null;
     }
-  }
-}
-
-class UserController with ChangeNotifier {
-  Map<String, dynamic> users = {};
-  bool working = true;
-  Object? error;
-
-  List<User> get userList => users.values.whereType<User>().toList();
-
-  getUsers() async {
-    try {
-      working = true;
-      List result = [];
-      http.Response res = await HttpService.get(
-          url: "https://jsonplaceholder.typicode.com/users");
-      if (res.statusCode != 200 && res.statusCode != 201) {
-        throw Exception("${res.statusCode} | ${res.body}");
-      }
-      result = jsonDecode(res.body);
-
-      List<User> tmpUser = result.map((e) => User.fromJson(e)).toList();
-      users = {for (User u in tmpUser) "${u.id}": u};
-      working = false;
-      notifyListeners();
-    } catch (e, st) {
-      print(e);
-      print(st);
-      error = e;
-      working = false;
-      notifyListeners();
-    }
-  }
-
-  clear() {
-    users = {};
-    notifyListeners();
-  }
-}
-
-class HttpService {
-  static Future<http.Response> get(
-      {required String url, Map<String, dynamic>? headers}) async {
-    Uri uri = Uri.parse(url);
-    return http.get(uri, headers: {
-      'Content-Type': 'application/json',
-      if (headers != null) ...headers
-    });
-  }
-
-  static Future<http.Response> post(
-      {required String url,
-      required Map<dynamic, dynamic> body,
-      Map<String, dynamic>? headers}) async {
-    Uri uri = Uri.parse(url);
-    return http.post(uri, body: jsonEncode(body), headers: {
-      'Content-Type': 'application/json',
-      if (headers != null) ...headers
-    });
   }
 }

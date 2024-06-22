@@ -5,12 +5,14 @@ class Post extends Equatable {
   final int id;
   final String title;
   final String body;
+  bool deleted; // New property to track if post is deleted
 
-  const Post({
+  Post({
     required this.userId,
     required this.id,
     required this.title,
     required this.body,
+    this.deleted = false, // Default to false, meaning post is not deleted
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class Post extends Equatable {
       id: int.tryParse("${json['id']}") ?? 0,
       title: json['title'],
       body: json['body'],
+      deleted: json['deleted'] ?? false, // Initialize deleted flag from JSON
     );
   }
 
@@ -28,34 +31,43 @@ class Post extends Equatable {
       'id': id,
       'title': title,
       'body': body,
+      'deleted': deleted, // Include deleted flag in JSON serialization
     };
   }
 
-  static const empty = Post(userId: 0, id: 0, title: '', body: '');
+  static Post empty = Post(userId: 0, id: 0, title: '', body: '');
 
   Post copyWith({
     int? userId,
     int? id,
     String? title,
     String? body,
+    bool? deleted, // Allow updating deleted flag
   }) {
     return Post(
       userId: userId ?? this.userId,
       id: id ?? this.id,
       title: title ?? this.title,
       body: body ?? this.body,
+      deleted: deleted ?? this.deleted, // Preserve deleted flag if not provided
     );
   }
 
   @override
-  List<Object?> get props => [userId, id, title, body];
+  List<Object?> get props => [
+        userId,
+        id,
+        title,
+        body,
+        deleted
+      ]; // Include deleted in equality comparison
 
   @override
   bool get stringify => true;
 
   @override
   String toString() {
-    return 'Post{userId: $userId, id: $id, title: $title, body: $body}';
+    return 'Post{userId: $userId, id: $id, title: $title, body: $body, deleted: $deleted}';
   }
 
   String getUserId() {
