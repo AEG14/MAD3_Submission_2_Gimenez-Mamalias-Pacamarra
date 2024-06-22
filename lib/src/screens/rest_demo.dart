@@ -147,6 +147,32 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                   child: const Text(
                                     "View Details",
                                     style: TextStyle(color: Colors.green),
+=======
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.green,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "View Details",
+                                        style: TextStyle(color: Colors.green),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          EditPostDialog.show(
+                                            context,
+                                            controller: controller,
+                                            post: post,
+                                          );
+                                        },
+                                      ),
+                                    ],
+>>>>>>> 7bbcf17c738eb4550c668c0d86fb25dd531aea09
                                   ),
                                   onPressed: () {
                                     showPostDetails(
