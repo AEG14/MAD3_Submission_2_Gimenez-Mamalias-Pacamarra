@@ -120,12 +120,14 @@ class _AddPostDialogState extends State<AddPostDialog> {
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
+              //validate unique key before adding
               await widget.controller.makePost(
                   title: titleC.text.trim(),
                   body: bodyC.text.trim(),
                   userId: 1);
               Navigator.of(context).pop();
               showDialog(
+                //showDialog after this context pops, to the parentContext of this widget
                 context: widget.parentContext,
                 builder: (BuildContext context) {
                   return AlertDialog(
