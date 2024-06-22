@@ -149,6 +149,24 @@ class PostController with ChangeNotifier {
       return Post.empty;
     }
   }
+
+  Future<void> deletePost(int id) async {
+    try {
+      working = true;
+      if (error != null) error = null;
+
+      posts.remove(id.toString());
+
+      working = false;
+      notifyListeners();
+    } catch (e, st) {
+      print(e);
+      print(st);
+      error = e;
+      working = false;
+      notifyListeners();
+    }
+  }
 }
 
 class HttpService {

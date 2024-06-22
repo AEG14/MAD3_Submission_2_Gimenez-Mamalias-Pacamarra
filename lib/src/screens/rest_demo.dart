@@ -148,7 +148,8 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                     foregroundColor: Colors.green,
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         "View Details",
@@ -162,6 +163,16 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                             controller: controller,
                                             post: post,
                                           );
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text("Delete"),
+                                        onPressed: () async {
+                                          await controller.deletePost(post.id);
+                                          setState(() {
+                                            controller.posts
+                                                .remove(post.id.toString());
+                                          });
                                         },
                                       ),
                                     ],
