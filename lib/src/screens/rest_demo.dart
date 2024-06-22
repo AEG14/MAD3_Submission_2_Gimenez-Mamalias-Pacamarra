@@ -1,16 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
-import '../models/post.model.dart';
-import '../models/user.model.dart';
-import '../services/http_services.dart';
+import 'package:state_change_demo/src/models/post.model.dart';
+// import 'package:state_change_demo/src/models/user.model.dart';
+
+import 'package:state_change_demo/src/utils/utils.dart';
+import 'package:state_change_demo/src/screens/edit_post.dart';
 
 class RestDemoScreen extends StatefulWidget {
-  const RestDemoScreen({super.key});
-
   @override
-  State<RestDemoScreen> createState() => _RestDemoScreenState();
+  _RestDemoScreenState createState() => _RestDemoScreenState();
 }
 
 class _RestDemoScreenState extends State<RestDemoScreen> {
@@ -60,16 +58,18 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
       appBar: AppBar(
         title: const Text("Posts"),
         leading: IconButton(
-            onPressed: () {
-              controller.getPosts();
-            },
-            icon: const Icon(Icons.refresh)),
+          onPressed: () {
+            controller.getPosts();
+          },
+          icon: const Icon(Icons.refresh),
+        ),
         actions: [
           IconButton(
-              onPressed: () {
-                showNewPostFunction(context);
-              },
-              icon: const Icon(Icons.add))
+            onPressed: () {
+              showNewPostFunction(context);
+            },
+            icon: const Icon(Icons.add),
+          ),
         ],
       ),
       body: SafeArea(
@@ -98,8 +98,10 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
+                              SizedBox(height: 15),
                               Padding(
-                                padding: const EdgeInsets.all(15),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
@@ -139,15 +141,6 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.amberAccent,
-                                  ),
-                                  child: const Text(
-                                    "View Details",
-                                    style: TextStyle(color: Colors.green),
-=======
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
                                 child: TextButton(
@@ -155,7 +148,8 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                     foregroundColor: Colors.green,
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         "View Details",
@@ -172,7 +166,6 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                         },
                                       ),
                                     ],
->>>>>>> 7bbcf17c738eb4550c668c0d86fb25dd531aea09
                                   ),
                                   onPressed: () {
                                     showPostDetails(
@@ -304,112 +297,5 @@ class _AddPostDialogState extends State<AddPostDialog> {
         ),
       ),
     );
-  }
-}
-
-class PostController with ChangeNotifier {
-  Map<String, dynamic> posts = {};
-  bool working = true;
-  Object? error;
-  int _highestId = 0;
-
-  List<Post> get postList => posts.values.whereType<Post>().toList();
-
-  clear() {
-    error = null;
-    posts = {};
-    _highestId = 0;
-    notifyListeners();
-  }
-
-  Future<Post> makePost(
-      {required String title,
-      required String body,
-      required int userId}) async {
-    try {
-      working = true;
-      if (error != null) error = null;
-      print(title);
-      print(body);
-      print(userId);
-      http.Response res = await HttpService.post(
-          url: "https://jsonplaceholder.typicode.com/posts",
-          body: {"title": title, "body": body, "userId": userId});
-      if (res.statusCode != 200 && res.statusCode != 201) {
-        throw Exception("${res.statusCode} | ${res.body}");
-      }
-
-      print(res.body);
-
-      Map<String, dynamic> result = jsonDecode(res.body);
-      //add new ID to new Post
-      _highestId++;
-      result['id'] = _highestId;
-
-      Post output = Post.fromJson(result);
-      posts[output.id.toString()] = output;
-      working = false;
-      notifyListeners();
-      return output;
-    } catch (e, st) {
-      print(e);
-      print(st);
-      error = e;
-      working = false;
-      notifyListeners();
-      return Post.empty;
-    }
-  }
-
-  Future<void> getPosts() async {
-    try {
-      working = true;
-      clear();
-      List result = [];
-      http.Response res = await HttpService.get(
-          url: "https://jsonplaceholder.typicode.com/posts");
-      if (res.statusCode != 200 && res.statusCode != 201) {
-        throw Exception("${res.statusCode} | ${res.body}");
-      }
-      result = jsonDecode(res.body);
-
-      List<Post> tmpPost = result.map((e) => Post.fromJson(e)).toList();
-      posts = {for (Post p in tmpPost) "${p.id}": p};
-
-      // Update the highest ID
-      _highestId =
-          posts.keys.map((e) => int.parse(e)).reduce((a, b) => a > b ? a : b);
-
-      working = false;
-      notifyListeners();
-    } catch (e, st) {
-      print(e);
-      print(st);
-      error = e;
-      working = false;
-      notifyListeners();
-    }
-  }
-
-  Future<Post?> getPostById(int id) async {
-    try {
-      working = true;
-      http.Response res = await HttpService.get(
-          url: "https://jsonplaceholder.typicode.com/posts/$id");
-      if (res.statusCode != 200 && res.statusCode != 201) {
-        throw Exception("${res.statusCode} | ${res.body}");
-      }
-      Map<String, dynamic> result = jsonDecode(res.body);
-      Post post = Post.fromJson(result);
-      working = false;
-      return post;
-    } catch (e, st) {
-      print(e);
-      print(st);
-      error = e;
-      working = false;
-      notifyListeners();
-      return null;
-    }
   }
 }
