@@ -89,10 +89,12 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
 class AddPostDialog extends StatefulWidget {
   static show(BuildContext context, {required PostController controller}) =>
       showDialog(
-          context: context, builder: (dContext) => AddPostDialog(controller));
-  const AddPostDialog(this.controller, {super.key});
+          context: context,
+          builder: (dContext) => AddPostDialog(controller, context));
+  const AddPostDialog(this.controller, this.parentContext, {super.key});
 
   final PostController controller;
+  final BuildContext parentContext;
 
   @override
   State<AddPostDialog> createState() => _AddPostDialogState();
@@ -100,6 +102,7 @@ class AddPostDialog extends StatefulWidget {
 
 class _AddPostDialogState extends State<AddPostDialog> {
   late TextEditingController bodyC, titleC;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -116,30 +119,66 @@ class _AddPostDialogState extends State<AddPostDialog> {
       actions: [
         ElevatedButton(
           onPressed: () async {
-            widget.controller.makePost(
-                title: titleC.text.trim(), body: bodyC.text.trim(), userId: 1);
-            Navigator.of(context).pop();
+            if (_formKey.currentState!.validate()) {
+              await widget.controller.makePost(
+                  title: titleC.text.trim(),
+                  body: bodyC.text.trim(),
+                  userId: 1);
+              Navigator.of(context).pop();
+              showDialog(
+                context: widget.parentContext,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Success"),
+                    content: const Text("Post added successfully"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
           },
           child: const Text("Add"),
         )
       ],
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Title"),
-          Flexible(
-            child: TextFormField(
-              controller: titleC,
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Title"),
+            Flexible(
+              child: TextFormField(
+                controller: titleC,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Title cannot be empty";
+                  }
+                  return null;
+                },
+              ),
             ),
-          ),
-          const Text("Content"),
-          Flexible(
-            child: TextFormField(
-              controller: bodyC,
+            const Text("Content"),
+            Flexible(
+              child: TextFormField(
+                controller: bodyC,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Content cannot be empty";
+                  }
+                  return null;
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -149,12 +188,14 @@ class PostController with ChangeNotifier {
   Map<String, dynamic> posts = {};
   bool working = true;
   Object? error;
+  int _highestId = 0;
 
   List<Post> get postList => posts.values.whereType<Post>().toList();
 
   clear() {
     error = null;
     posts = {};
+    _highestId = 0;
     notifyListeners();
   }
 
@@ -164,7 +205,7 @@ class PostController with ChangeNotifier {
       required int userId}) async {
     try {
       working = true;
-      if(error != null ) error = null;
+      if (error != null) error = null;
       print(title);
       print(body);
       print(userId);
@@ -178,6 +219,9 @@ class PostController with ChangeNotifier {
       print(res.body);
 
       Map<String, dynamic> result = jsonDecode(res.body);
+      //add new ID to new Post
+      _highestId++;
+      result['id'] = _highestId;
 
       Post output = Post.fromJson(result);
       posts[output.id.toString()] = output;
@@ -208,6 +252,11 @@ class PostController with ChangeNotifier {
 
       List<Post> tmpPost = result.map((e) => Post.fromJson(e)).toList();
       posts = {for (Post p in tmpPost) "${p.id}": p};
+
+      // Update the highest ID
+      _highestId =
+          posts.keys.map((e) => int.parse(e)).reduce((a, b) => a > b ? a : b);
+
       working = false;
       notifyListeners();
     } catch (e, st) {
