@@ -6,7 +6,7 @@ class Post extends Equatable {
   final String title;
   final String body;
 
-  const Post({
+  Post({
     required this.userId,
     required this.id,
     required this.title,
@@ -15,8 +15,8 @@ class Post extends Equatable {
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      userId: int.tryParse("${json['userId']}")??0,
-      id: int.tryParse("${json['id']}")??0,
+      userId: int.tryParse("${json['userId']}") ?? 0,
+      id: int.tryParse("${json['id']}") ?? 0,
       title: json['title'],
       body: json['body'],
     );
@@ -31,7 +31,7 @@ class Post extends Equatable {
     };
   }
 
-  static const empty = Post(userId: 0, id: 0, title: '', body: '');
+  static Post empty = Post(userId: 0, id: 0, title: '', body: '');
 
   Post copyWith({
     int? userId,
@@ -48,7 +48,12 @@ class Post extends Equatable {
   }
 
   @override
-  List<Object?> get props => [userId, id, title, body];
+  List<Object?> get props => [
+        userId,
+        id,
+        title,
+        body,
+      ];
 
   @override
   bool get stringify => true;
@@ -56,5 +61,21 @@ class Post extends Equatable {
   @override
   String toString() {
     return 'Post{userId: $userId, id: $id, title: $title, body: $body}';
+  }
+
+  String getUserId() {
+    return 'UserID: $userId';
+  }
+
+  String getId() {
+    return 'ID: $id';
+  }
+
+  String getTitle() {
+    return 'Title: $title';
+  }
+
+  String getBody() {
+    return 'Body: $body';
   }
 }

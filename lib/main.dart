@@ -21,15 +21,15 @@ class MyApp extends StatelessWidget {
       ),
       home: RestDemoScreen(),
     );
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: GlobalRouter().router,
-      title: 'Stateful Changes Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-    );
+    // return MaterialApp.router(
+    //   debugShowCheckedModeBanner: false,
+    //   routerConfig: GlobalRouter().router,
+    //   title: 'Stateful Changes Demo',
+    //   theme: ThemeData(
+    //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    //     useMaterial3: true,
+    //   ),
+    // );
   }
 }
 
