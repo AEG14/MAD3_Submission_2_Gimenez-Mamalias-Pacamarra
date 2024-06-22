@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:state_change_demo/src/models/post.model.dart';
-// import 'package:state_change_demo/src/models/user.model.dart';
-
 import 'package:state_change_demo/src/utils/utils.dart';
-import 'package:state_change_demo/src/screens/edit_post.dart';
 
 class RestDemoScreen extends StatefulWidget {
   @override
@@ -188,14 +185,14 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                                           post.id.toString());
                                                     });
                                                     Navigator.of(context)
-                                                        .pop(); // Close the alert dialog
+                                                        .pop();
                                                   },
                                                   child: const Text("Delete"),
                                                 ),
                                                 TextButton(
                                                   onPressed: () {
                                                     Navigator.of(context)
-                                                        .pop(); // Close the alert dialog
+                                                        .pop();
                                                   },
                                                   child: const Text("Cancel"),
                                                 ),
@@ -295,6 +292,91 @@ class _AddPostDialogState extends State<AddPostDialog> {
             }
           },
           child: const Text("Add"),
+        )
+      ],
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Title"),
+            Flexible(
+              child: TextFormField(
+                controller: titleC,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Title cannot be empty";
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const Text("Content"),
+            Flexible(
+              child: TextFormField(
+                controller: bodyC,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Content cannot be empty";
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditPostDialog extends StatefulWidget {
+  static show(BuildContext context,
+          {required PostController controller, required Post post}) =>
+      showDialog(
+          context: context,
+          builder: (dContext) => EditPostDialog(controller, post));
+
+  const EditPostDialog(this.controller, this.post, {super.key});
+
+  final PostController controller;
+  final Post post;
+
+  @override
+  State<EditPostDialog> createState() => _EditPostDialogState();
+}
+
+class _EditPostDialogState extends State<EditPostDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController bodyC, titleC;
+
+  @override
+  void initState() {
+    super.initState();
+    bodyC = TextEditingController(text: widget.post.body);
+    titleC = TextEditingController(text: widget.post.title);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      title: const Text("Edit post"),
+      actions: [
+        ElevatedButton(
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              widget.controller.updatePost(
+                id: widget.post.id,
+                title: titleC.text.trim(),
+                body: bodyC.text.trim(),
+                userId: widget.post.userId,
+              );
+              Navigator.of(context).pop();
+            }
+          },
+          child: const Text("Update"),
         )
       ],
       content: Form(
