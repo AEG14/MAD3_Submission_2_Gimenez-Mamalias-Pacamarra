@@ -98,7 +98,7 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
@@ -143,46 +143,70 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.green,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.green,
+                                      ),
+                                      onPressed: () {
+                                        showPostDetails(context, post.id);
+                                      },
+                                      child: const Text(
                                         "View Details",
                                         style: TextStyle(color: Colors.green),
                                       ),
-                                      IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed: () {
-                                          EditPostDialog.show(
-                                            context,
-                                            controller: controller,
-                                            post: post,
-                                          );
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: Text("Delete"),
-                                        onPressed: () async {
-                                          await controller.deletePost(post.id);
-                                          setState(() {
-                                            controller.posts
-                                                .remove(post.id.toString());
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  onPressed: () {
-                                    showPostDetails(
-                                      context,
-                                      post.id,
-                                    );
-                                  },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.edit),
+                                      onPressed: () {
+                                        EditPostDialog.show(
+                                          context,
+                                          controller: controller,
+                                          post: post,
+                                        );
+                                      },
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text("Confirm Delete"),
+                                              content: const Text(
+                                                  "Are you sure you want to delete this post?"),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    await controller
+                                                        .deletePost(post.id);
+                                                    setState(() {
+                                                      controller.posts.remove(
+                                                          post.id.toString());
+                                                    });
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the alert dialog
+                                                  },
+                                                  child: const Text("Delete"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the alert dialog
+                                                  },
+                                                  child: const Text("Cancel"),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Text("Delete"),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
