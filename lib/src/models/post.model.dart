@@ -15,8 +15,8 @@ class Post extends Equatable {
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      userId: int.tryParse("${json['userId']}")??0,
-      id: int.tryParse("${json['id']}")??0,
+      userId: int.tryParse("${json['userId']}") ?? 0,
+      id: int.tryParse("${json['id']}") ?? 0,
       title: json['title'],
       body: json['body'],
     );
@@ -56,5 +56,21 @@ class Post extends Equatable {
   @override
   String toString() {
     return 'Post{userId: $userId, id: $id, title: $title, body: $body}';
+  }
+
+  String getUserId() {
+    return 'UserID: $userId';
+  }
+
+  String getId() {
+    return 'ID: $id';
+  }
+
+  String getTitle() {
+    return 'Title: $title';
+  }
+
+  String getBody() {
+    return 'Body: $body';
   }
 }

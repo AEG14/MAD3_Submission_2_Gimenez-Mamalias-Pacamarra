@@ -1,10 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
-import 'package:state_change_demo/src/models/post.model.dart';
-import 'package:state_change_demo/src/models/user.model.dart';
+import '../models/post.model.dart';
+import '../models/user.model.dart';
 
 class RestDemoScreen extends StatefulWidget {
   const RestDemoScreen({super.key});
@@ -15,6 +14,38 @@ class RestDemoScreen extends StatefulWidget {
 
 class _RestDemoScreenState extends State<RestDemoScreen> {
   PostController controller = PostController();
+
+  void showPostDetails(BuildContext context, int postId) async {
+    Post? post = await controller.getPostById(postId);
+    if (post == null) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(post.getTitle()),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('User ID: ${post.userId}'),
+                Text('Post ID: ${post.id}'),
+                Text('Title: ${post.title}'),
+                Text('Body: ${post.body}'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -42,41 +73,106 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
       ),
       body: SafeArea(
         child: ListenableBuilder(
-            listenable: controller,
-            builder: (context, _) {
-              if (controller.error != null) {
-                return Center(
-                  child: Text(controller.error.toString()),
-                );
-              }
+          listenable: controller,
+          builder: (context, _) {
+            if (controller.error != null) {
+              return Center(
+                child: Text(controller.error.toString()),
+              );
+            }
 
-              if (!controller.working) {
-                return Center(
-                  child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (Post post in controller.postList)
-                            Container(
-                                padding: const EdgeInsets.all(8),
-                                margin: const EdgeInsets.only(bottom: 8),
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.blueAccent),
-                                    borderRadius: BorderRadius.circular(16)),
-                                child: Text(post.toString()))
-                        ],
-                      )),
-                );
-              }
-              return const Center(
-                child: SpinKitChasingDots(
-                  size: 54,
-                  color: Colors.black87,
+            if (!controller.working) {
+              return Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (Post post in controller.postList)
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.asset(
+                                        'assets/images/targaryen1.jpg',
+                                        height: 150,
+                                        width: 150,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Container(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Container(height: 5),
+                                          Text(
+                                            '${post.getUserId()}, ${post.getId()}',
+                                          ),
+                                          Container(height: 5),
+                                          Text(
+                                            post.getTitle(),
+                                          ),
+                                          Container(height: 10),
+                                          Text(
+                                            post.getBody(),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: TextButton(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor:
+                                                    Colors.amberAccent,
+                                              ),
+                                              child: const Text(
+                                                "View Details",
+                                                style: TextStyle(
+                                                    color: Colors.green),
+                                              ),
+                                              onPressed: () {
+                                                showPostDetails(
+                                                  context,
+                                                  post.id,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               );
-            }),
+            }
+            return const Center(
+              child: SpinKitChasingDots(
+                size: 54,
+                color: Colors.black87,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -164,7 +260,7 @@ class PostController with ChangeNotifier {
       required int userId}) async {
     try {
       working = true;
-      if(error != null ) error = null;
+      if (error != null) error = null;
       print(title);
       print(body);
       print(userId);
@@ -216,6 +312,28 @@ class PostController with ChangeNotifier {
       error = e;
       working = false;
       notifyListeners();
+    }
+  }
+
+  Future<Post?> getPostById(int id) async {
+    try {
+      working = true;
+      http.Response res = await HttpService.get(
+          url: "https://jsonplaceholder.typicode.com/posts/$id");
+      if (res.statusCode != 200 && res.statusCode != 201) {
+        throw Exception("${res.statusCode} | ${res.body}");
+      }
+      Map<String, dynamic> result = jsonDecode(res.body);
+      Post post = Post.fromJson(result);
+      working = false;
+      return post;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      error = e;
+      working = false;
+      notifyListeners();
+      return null;
     }
   }
 }
