@@ -1,16 +1,25 @@
-# state_change_demo
+# REST Activity
 
-States and how they affect each other
+## Project Division and Task Contributions
 
-## Getting Started
+### Harley Mamalias:
+- Task 1: Get or Show All Posts
+- Task 2: Show Details of Specific Posts
 
-This project is a starting point for a Flutter application.
+### Aithan Gimenez:
+- Task 3: Add a new post
+- Task 7: Validation on inputs
 
-A few resources to get you started if this is your first Flutter project:
+### Anthony Pacamarra:
+- Task 5: Edit a Post
+- Task 6: Delete a Post
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Initial Project Setup
+Harley Mamalias initiated the project and set up the foundational structure, defining show functionalities and interfaces for tasks 1 and 2.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Post-Merge Modifications and Conflict Resolution
+After the implementation of individual tasks and merging everything, several issues were identified, particularly with newly added posts not being editable or have displayable details. To resolve these conflicts and improve functionality:
+
+- Aithan Gimenez revised the `updatePost` and `getPostById` methods. These methods were modified to first check for errors when interacting with external resources (jsonplaceholder). If an error occurred, the methods were updated to retrieve and update posts locally from the `localPost` list instead. Thus making the new posts editable and have displayable details.
+
+- Anthony Pacamarra addressed validation concerns related to the postId in new posts. When deleting posts, the `_highestId` seems to be not updated. Thus, he improved the functionality for deleting posts, to update the `_highestId`, so that newly added posts will have their postId correctly displayed.
