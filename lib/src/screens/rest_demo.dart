@@ -132,30 +132,28 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: TextButton(
-                                              style: TextButton.styleFrom(
-                                                foregroundColor:
-                                                    Colors.amberAccent,
-                                              ),
-                                              child: const Text(
-                                                "View Details",
-                                                style: TextStyle(
-                                                    color: Colors.green),
-                                              ),
-                                              onPressed: () {
-                                                showPostDetails(
-                                                  context,
-                                                  post.id,
-                                                );
-                                              },
-                                            ),
-                                          ),
                                         ],
                                       ),
                                     ),
                                   ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.amberAccent,
+                                  ),
+                                  child: const Text(
+                                    "View Details",
+                                    style: TextStyle(color: Colors.green),
+                                  ),
+                                  onPressed: () {
+                                    showPostDetails(
+                                      context,
+                                      post.id,
+                                    );
+                                  },
                                 ),
                               ),
                             ],
