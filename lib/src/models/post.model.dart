@@ -72,10 +72,10 @@ class Post extends Equatable {
   }
 
   String getTitle() {
-    return 'Title: $title';
+    return title;
   }
 
   String getBody() {
-    return 'Body: $body';
+    return body;
   }
 }

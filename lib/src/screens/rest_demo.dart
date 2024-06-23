@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:state_change_demo/src/models/post.model.dart';
 import 'package:state_change_demo/src/utils/utils.dart';
 
@@ -19,20 +20,86 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(post.getTitle()),
+          title: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.blue,
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.info_outline,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Post Details',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('User ID: ${post.userId}'),
-                Text('Post ID: ${post.id}'),
-                Text('Title: ${post.title}'),
-                Text('Body: ${post.body}'),
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: Text(
+                    'User ID: ${post.userId}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.assignment),
+                  title: Text(
+                    'Post ID: ${post.id}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.title),
+                  title: Text(
+                    'Title: ${post.title}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.message),
+                  title: Text(
+                    'Body: ${post.body}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Close'),
+              child: Text(
+                'Close',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.blue,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -102,40 +169,112 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                        'assets/images/targaryen1.jpg',
-                                        height: 150,
-                                        width: 150,
-                                        fit: BoxFit.cover,
-                                      ),
+                                    Column(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.asset(
+                                            'assets/images/cat.jpg',
+                                            height: 80,
+                                            width: 80,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          post.getUserId(),
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Container(width: 20),
+                                    const SizedBox(width: 20),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Container(height: 5),
-                                          Text(
-                                            '${post.getUserId()}, ${post.getId()}',
-                                          ),
-                                          Container(height: 5),
-                                          Text(
-                                            post.getTitle(),
-                                          ),
-                                          Container(height: 10),
-                                          Text(
-                                            post.getBody(),
+                                          RichText(
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
+                                            text: TextSpan(
+                                              text: 'Title: ',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: post.getTitle(),
+                                                  style: GoogleFonts.poppins(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          RichText(
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            text: TextSpan(
+                                              text: 'Body: ',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12,
+                                                color: const Color.fromARGB(
+                                                  255,
+                                                  132,
+                                                  128,
+                                                  128,
+                                                ),
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: post.getBody(),
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 12,
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      132,
+                                                      128,
+                                                      128,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      post.getId(),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color.fromARGB(
+                                          255,
+                                          76,
+                                          76,
+                                          79,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
+                              ),
+                              const SizedBox(
+                                height: 10,
                               ),
                               Padding(
                                 padding:
@@ -144,67 +283,203 @@ class _RestDemoScreenState extends State<RestDemoScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    TextButton(
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: Colors.green,
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
-                                      onPressed: () {
-                                        showPostDetails(context, post.id);
-                                      },
-                                      child: const Text(
-                                        "View Details",
-                                        style: TextStyle(color: Colors.green),
+                                      child: TextButton.icon(
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10.0,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                title: const Text(
+                                                  "Confirm Delete",
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                                content: const Text(
+                                                  "Are you sure you want to delete this post?",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  ElevatedButton(
+                                                    onPressed: () async {
+                                                      await controller
+                                                          .deletePost(post.id);
+                                                      setState(() {
+                                                        controller.posts.remove(
+                                                            post.id.toString());
+                                                      });
+                                                      Navigator.of(context)
+                                                          .pop();
+
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              "Post deleted successfully."),
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                        ),
+                                                      );
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20,
+                                                          vertical: 12),
+                                                    ),
+                                                    child: const Text(
+                                                      "Delete",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: const Text(
+                                                      "Cancel",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                          color: Colors.white,
+                                        ),
+                                        iconAlignment: IconAlignment.end,
+                                        label: Text(
+                                          "Delete",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () {
-                                        EditPostDialog.show(
-                                          context,
-                                          controller: controller,
-                                          post: post,
-                                        );
-                                      },
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: const Text("Confirm Delete"),
-                                              content: const Text(
-                                                  "Are you sure you want to delete this post?"),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    await controller
-                                                        .deletePost(post.id);
-                                                    setState(() {
-                                                      controller.posts.remove(
-                                                          post.id.toString());
-                                                    });
-                                                    Navigator.of(context)
-                                                        .pop();
-                                                  },
-                                                  child: const Text("Delete"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop();
-                                                  },
-                                                  child: const Text("Cancel"),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: const Text("Delete"),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.amber,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: TextButton.icon(
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: Colors.amber,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 10.0,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              EditPostDialog.show(
+                                                context,
+                                                controller: controller,
+                                                post: post,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.edit,
+                                              color: Colors.black,
+                                            ),
+                                            iconAlignment: IconAlignment.end,
+                                            label: Text(
+                                              "Edit",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: TextButton.icon(
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: Colors.green,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 10.0,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              showPostDetails(context, post.id);
+                                            },
+                                            icon: const Icon(
+                                              Icons.info_outline,
+                                              color: Colors.white,
+                                            ),
+                                            iconAlignment: IconAlignment.end,
+                                            label: Text(
+                                              "View",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
+                              ),
+                              const SizedBox(
+                                height: 5,
                               ),
                             ],
                           ),
@@ -259,31 +534,123 @@ class _AddPostDialogState extends State<AddPostDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      title: const Text("Add new post"),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      title: const Text(
+        "Add new post",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87, 
+        ),
+      ),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12),
+            const Text(
+              "Title",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87, 
+              ),
+            ),
+            TextFormField(
+              controller: titleC,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return "Title cannot be empty";
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                hintText: "Enter title",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Content",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87, 
+              ),
+            ),
+            TextFormField(
+              controller: bodyC,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return "Content cannot be empty";
+                }
+                return null;
+              },
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: "Enter content",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       actions: [
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              //validate unique key before adding
+              // Validate and add post
               await widget.controller.makePost(
-                  title: titleC.text.trim(),
-                  body: bodyC.text.trim(),
-                  userId: 1);
+                title: titleC.text.trim(),
+                body: bodyC.text.trim(),
+                userId: 1,
+              );
               Navigator.of(context).pop();
+
               showDialog(
-                //showDialog after this context pops, to the parentContext of this widget
-                context: widget.parentContext,
+                context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Success"),
-                    content: const Text("Post added successfully"),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    title: const Text(
+                      "Success",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green, 
+                      ),
+                    ),
+                    content: const Text(
+                      "Post added successfully",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87, 
+                      ),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text("OK"),
+                        child: const Text(
+                          "OK",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green, 
+                          ),
+                        ),
                       ),
                     ],
                   );
@@ -291,42 +658,36 @@ class _AddPostDialogState extends State<AddPostDialog> {
               );
             }
           },
-          child: const Text("Add"),
-        )
-      ],
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Title"),
-            Flexible(
-              child: TextFormField(
-                controller: titleC,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Title cannot be empty";
-                  }
-                  return null;
-                },
-              ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green, 
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-            const Text("Content"),
-            Flexible(
-              child: TextFormField(
-                controller: bodyC,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Content cannot be empty";
-                  }
-                  return null;
-                },
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          ),
+          child: const Text(
+            "Add",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white, 
             ),
-          ],
+          ),
         ),
-      ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text(
+            "Cancel",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87, 
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -361,9 +722,86 @@ class _EditPostDialogState extends State<EditPostDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      title: const Text("Edit post"),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      title: const Text(
+        "Edit Post",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              const Text(
+                "Title",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextFormField(
+                controller: titleC,
+                decoration: InputDecoration(
+                  hintText: "Enter title",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Title cannot be empty";
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Content",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextFormField(
+                controller: bodyC,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: "Enter content",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Content cannot be empty";
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text(
+            "Cancel",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
@@ -376,42 +814,23 @@ class _EditPostDialogState extends State<EditPostDialog> {
               Navigator.of(context).pop();
             }
           },
-          child: const Text("Update"),
-        )
-      ],
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Title"),
-            Flexible(
-              child: TextFormField(
-                controller: titleC,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Title cannot be empty";
-                  }
-                  return null;
-                },
-              ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.amber,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-            const Text("Content"),
-            Flexible(
-              child: TextFormField(
-                controller: bodyC,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Content cannot be empty";
-                  }
-                  return null;
-                },
-              ),
+          ),
+          child: const Text(
+            "Update",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
