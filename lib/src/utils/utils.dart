@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:state_change_demo/src/models/post.model.dart';
 
 class PostController with ChangeNotifier {
-  Map<String, dynamic> posts = {};
+  Map<String, Post> posts = {};
   bool working = true;
   Object? error;
   int _highestId = 0;
@@ -13,32 +13,31 @@ class PostController with ChangeNotifier {
 
   clear() {
     error = null;
-    posts = {};
+    posts.clear();
     _highestId = 0;
     notifyListeners();
   }
 
-  Future<Post> makePost(
-      {required String title,
-      required String body,
-      required int userId}) async {
+  Future<Post> makePost({
+    required String title,
+    required String body,
+    required int userId,
+  }) async {
     try {
       working = true;
       if (error != null) error = null;
-      print(title);
-      print(body);
-      print(userId);
+
       http.Response res = await HttpService.post(
-          url: "https://jsonplaceholder.typicode.com/posts",
-          body: {"title": title, "body": body, "userId": userId});
-      if (res.statusCode != 200 && res.statusCode != 201) {
+        url: "https://jsonplaceholder.typicode.com/posts",
+        body: {"title": title, "body": body, "userId": userId},
+      );
+
+      if (res.statusCode != 201) {
         throw Exception("${res.statusCode} | ${res.body}");
       }
 
-      print(res.body);
-
       Map<String, dynamic> result = jsonDecode(res.body);
-      //add new ID to new Post
+
       _highestId++;
       result['id'] = _highestId;
 
@@ -48,6 +47,7 @@ class PostController with ChangeNotifier {
 
       Post output = Post.fromJson(result);
       posts[output.id.toString()] = output;
+
       working = false;
       notifyListeners();
       return output;
@@ -65,20 +65,25 @@ class PostController with ChangeNotifier {
     try {
       working = true;
       clear();
-      List result = [];
+
       http.Response res = await HttpService.get(
-          url: "https://jsonplaceholder.typicode.com/posts");
-      if (res.statusCode != 200 && res.statusCode != 201) {
+        url: "https://jsonplaceholder.typicode.com/posts",
+      );
+
+      if (res.statusCode != 200) {
         throw Exception("${res.statusCode} | ${res.body}");
       }
-      result = jsonDecode(res.body);
 
-      List<Post> tmpPost = result.map((e) => Post.fromJson(e)).toList();
-      posts = {for (Post p in tmpPost) "${p.id}": p};
+      List<dynamic> result = jsonDecode(res.body);
+      posts = Map.fromIterable(
+        result,
+        key: (item) => (item['id']).toString(),
+        value: (item) => Post.fromJson(item),
+      );
 
-      // Update the highest ID
-      _highestId =
-          posts.keys.map((e) => int.parse(e)).reduce((a, b) => a > b ? a : b);
+      _highestId = posts.keys
+          .map((e) => int.parse(e))
+          .reduce((value, element) => value > element ? value : element);
 
       working = false;
       notifyListeners();
@@ -94,13 +99,24 @@ class PostController with ChangeNotifier {
   Future<Post?> getPostById(int id) async {
     try {
       working = true;
+
       http.Response res = await HttpService.get(
-          url: "https://jsonplaceholder.typicode.com/posts/$id");
-      if (res.statusCode != 200 && res.statusCode != 201) {
+        url: "https://jsonplaceholder.typicode.com/posts/$id",
+      );
+
+      if (res.statusCode == 404) {
+        // If server returns 404, resource is not found
+        // Check if we have the post locally
+        Post? localPost = posts[id.toString()];
+        working = false;
+        return localPost;
+      } else if (res.statusCode != 200) {
         throw Exception("${res.statusCode} | ${res.body}");
       }
+
       Map<String, dynamic> result = jsonDecode(res.body);
       Post post = Post.fromJson(result);
+
       working = false;
       return post;
     } catch (e, st) {
@@ -113,32 +129,53 @@ class PostController with ChangeNotifier {
     }
   }
 
-  Future<Post> updatePost(
-      {required int id,
-      required String title,
-      required String body,
-      required int userId}) async {
+  Future<Post> updatePost({
+    required int id,
+    required String title,
+    required String body,
+    required int userId,
+  }) async {
     try {
       working = true;
-      if (error != null) error = null;
-      print(title);
-      print(body);
-      print(userId);
+
       http.Response res = await HttpService.put(
-          url: "https://jsonplaceholder.typicode.com/posts/$id",
-          body: {"title": title, "body": body, "userId": userId});
-      if (res.statusCode != 200 && res.statusCode != 201) {
+        url: "https://jsonplaceholder.typicode.com/posts/$id",
+        body: {"id": id, "title": title, "body": body, "userId": userId},
+      );
+
+      if (res.statusCode == 404 || res.statusCode == 500) {
+        // If server returns 404, resource is not found
+        // Check if we have the post locally
+        Post? localPost = posts[id.toString()];
+
+        if (localPost != null) {
+          // Create a new Post object with updated values
+          Post updatedPost =
+              localPost.copyWith(title: title, body: body, userId: userId);
+
+          // Update local data
+          posts[updatedPost.id.toString()] = updatedPost;
+
+          // Notify listeners
+          working = false;
+          notifyListeners();
+          return updatedPost;
+        } else {
+          throw Exception(
+              "Post with id $id not found locally or on the server.");
+        }
+      } else if (res.statusCode != 200 && res.statusCode != 201) {
         throw Exception("${res.statusCode} | ${res.body}");
       }
 
-      print(res.body);
-
       Map<String, dynamic> result = jsonDecode(res.body);
-
       Post output = Post.fromJson(result);
+
+      // Update local state with the updated post
       posts[output.id.toString()] = output;
       working = false;
       notifyListeners();
+
       return output;
     } catch (e, st) {
       print(e);
